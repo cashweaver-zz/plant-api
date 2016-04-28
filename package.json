@@ -1,0 +1,14 @@
+{
+  "name": "plant-api",
+  "version": "0.0.1",
+  "description": "REST API which exposes plant data.",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Cash Weaver <cashbweaver@gmail.com> (http://cashweaver.com)",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.13.4"
+  }
+}
