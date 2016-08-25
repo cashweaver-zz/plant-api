@@ -1,3 +1,3 @@
-# Plant API
+# plant-api
 
-REST API which exposes plant data.
+API for the Plant project.
