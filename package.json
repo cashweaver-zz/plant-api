@@ -1,0 +1,29 @@
+{
+  "name": "plant-api",
+  "version": "0.0.0",
+  "description": "API for the Plant project.",
+  "main": "api.js",
+  "dependencies": {
+    "express": "^4.14.0",
+    "json-api": "^2.15.7",
+    "jstransformer": "^1.0.0",
+    "mongoose": "^4.5.10",
+    "pug": "^2.0.0-beta5"
+  },
+  "devDependencies": {
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node api.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/cashweaver/plant-api.git"
+  },
+  "author": "cashweaver",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/cashweaver/plant-api/issues"
+  },
+  "homepage": "https://github.com/cashweaver/plant-api#readme"
+}
