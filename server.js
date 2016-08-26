@@ -35,7 +35,7 @@ let router = express.Router();
 
 // This is run for every API call. It's included for debugging.
 router.use(function (req, res, next) {
-  console.log('Request received.');
+  console.log('Request received. (' + req.url + ')');
   next();
 });
 
