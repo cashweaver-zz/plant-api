@@ -18,13 +18,14 @@ if (process.env.VCAP_SERVICES) {
   }
 } else {
   mongo = {
-    db:       'db',
+    db:       'plantapi',
     host:     'localhost',
-    password: 'pass',
     port:     27017,
     ssl:      false,
-    url:      'mongodb://localhost:27017/db',
-    username: 'admin',
+    url:      'mongodb://localhost:27017/plantapi',
+    // Disable for now since mongodb currently has no authentication
+    //password: 'pass',
+    //username: 'admin',
   };
 }
 
@@ -87,7 +88,7 @@ module.exports = {
     cookieKeyName: 'mongo-express',
     cookieSecret:     process.env.ME_CONFIG_SITE_COOKIESECRET   || 'cookiesecret',
     host:             process.env.VCAP_APP_HOST                 || 'localhost',
-    port:             process.env.VCAP_APP_PORT                 || 3001,
+    port:             process.env.VCAP_APP_PORT                 || 3010,
     requestSizeLimit: process.env.ME_CONFIG_REQUEST_SIZE        || '50mb',
     sessionSecret:    process.env.ME_CONFIG_SITE_SESSIONSECRET  || 'sessionsecret',
     sslCert:          process.env.ME_CONFIG_SITE_SSL_CRT_PATH   || '',
