@@ -1,7 +1,7 @@
 'use strict';
 
 let apiConfig = {
-  prefix: '/api',
+  base: '/api',
   name: 'Plant API'
 }
 let express = require('express');
@@ -47,10 +47,12 @@ router.use(function (req, res, next) {
   Front.sendError(new APIError(404, undefined, 'Not Found'), req, res);
 });
 
-app.use(apiConfig.prefix, router);
+app.use(apiConfig.base, router);
 
 // Start the server
-app.listen(3000, function () {
+let server = app.listen(process.env.PORT || 3000, function () {
   let host = server.address().address;
-  console.log('Listening at http://%s:%s', host, port);
+  let port = server.address().port;
+
+  console.log('Listening at http://%s:%s'+apiConfig.base, host, port);
 });
