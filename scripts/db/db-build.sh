@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 # Build data required for db initialization
 
-DATA_PATH="/home/vagrant/plant-api/data"
+BASE_PATH="/home/vagrant/plant-api"
+DATA_PATH="$BASE_PATH/data"
 
 echo "Creating $DATA_PATH"
 mkdir "$SAVE_PATH"
@@ -11,3 +12,5 @@ echo "Building plantapi.plants"
 # Plant data doesn't need building.
 
 echo "Building plantapi.climatestations"
+. $BASE_PATH/scripts/db/climatestations/climatestaions-download.sh
+python $BASE_PATH/scripts/db/climatestations/climatestaions-process.py

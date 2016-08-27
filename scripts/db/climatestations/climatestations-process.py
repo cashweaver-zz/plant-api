@@ -22,7 +22,7 @@ required_datasets = [
   dataset_base_path+'/dly-tmin-normal.txt',
   dataset_base_path+'/dly-tmin-stddev.txt',
   dataset_base_path+'/allstations.txt',
-  dataset_base_path+'/zipcodes-normals-stations.txt'
+  #dataset_base_path+'/zipcodes-normals-stations.txt'
 ]
 required_dataset_missing = False
 for path in required_datasets:
@@ -35,20 +35,22 @@ if required_dataset_missing:
   sys.exit(1)
 
 
-"""
 # Open datasets
+"""
 # REAL DATASETS
-dly_tmax_normal = open(dataset_base_path+'dly-tmax-normal.txt', 'r')
-dly_tmax_stddev = open(dataset_base_path+'dly-tmax-stddev.txt', 'r')
-dly_tmin_normal = open(dataset_base_path+'dly-tmin-normal.txt', 'r')
-dly_tmin_stddev = open(dataset_base_path+'dly-tmin-stddev.txt', 'r')
+dly_tmax_normal = open(dataset_base_path+'/dly-tmax-normal.txt', 'r')
+dly_tmax_stddev = open(dataset_base_path+'/dly-tmax-stddev.txt', 'r')
+dly_tmin_normal = open(dataset_base_path+'/dly-tmin-normal.txt', 'r')
+dly_tmin_stddev = open(dataset_base_path+'/dly-tmin-stddev.txt', 'r')
 # END: REAL DATASETS
+"""
+# REAL DATASETS
 
 # TEST DATASETS
-# dly_tmax_normal = open(dataset_base_path+'dly-tmax-normal-test.txt', 'r')
-# dly_tmax_stddev = open(dataset_base_path+'dly-tmax-stddev-test.txt', 'r')
-# dly_tmin_normal = open(dataset_base_path+'dly-tmin-normal-test.txt', 'r')
-# dly_tmin_stddev = open(dataset_base_path+'dly-tmin-stddev-test.txt', 'r')
+dly_tmax_normal = open(dataset_base_path+'/dly-tmax-normal-test.txt', 'r')
+dly_tmax_stddev = open(dataset_base_path+'/dly-tmax-stddev-test.txt', 'r')
+dly_tmin_normal = open(dataset_base_path+'/dly-tmin-normal-test.txt', 'r')
+dly_tmin_stddev = open(dataset_base_path+'/dly-tmin-stddev-test.txt', 'r')
 # END: TEST DATASETS
 
 datasets = [
@@ -106,7 +108,7 @@ slice_gsn_flag = slice(72, 75)
 slice_hcn_flag = slice(76, 79)
 slice_wmoid = slice(80, 85)
 slice_method = slice(86, 99)
-with open(dataset_base_path+'allstations.txt', 'r') as location_dataset:
+with open(dataset_base_path+'/allstations.txt', 'r') as location_dataset:
   for line in location_dataset:
     if line[slice_station_id].strip() in all_station_data:
 
@@ -135,9 +137,14 @@ with open(dataset_base_path+'allstations.txt', 'r') as location_dataset:
       }
 
 
-# TODO: Create this directory (/home/vagrant/app/data/processed/) if it doesn't exist
-with open('/home/vagrant/app/data/processed/stations.json', 'w+') as outfile:
+processed_data_path = repo_path+'/data/climatestations/processed'
+# ref: http://stackoverflow.com/questions/273192/how-to-check-if-a-directory-exists-and-create-it-if-necessary#comment42815524_273227
+try:
+  os.makedirs(processed_data_path)
+except OSError:
+  if not os.path.isdir(processed_data_path):
+    raise
+with open(processed_data_path+'/climatestations.json', 'w+') as outfile:
   for key in all_station_data:
     json.dump(all_station_data[key], outfile)
     outfile.write('\n')
-"""

@@ -160,7 +160,8 @@ module.exports = {
   // }
   defaultKeyNames: {
     'plantapi': {
-      'plants': 'name'
+      'plants': 'name',
+      'climatestations': 'stationId'
     }
   },
 };
