@@ -2,17 +2,28 @@ import sys
 import os.path
 import json
 import itertools
+from math import fsum
 #import requests
+
+def fahrenheit_to_celsius(degrees):
+  return (degrees - 32) * (5/9)
+
+def running_average(length, data, index):
+  if length < index+1:
+    return fsum(data[index+1-length:index+1])/length
+  else:
+    sub_data = data[:index+1]
+    for i in xrange(index+1-length, 0):
+      sub_data.append(data[i])
+    return fsum(sub_data)/length
 
 repo_path = '/home/vagrant/plant-api'
 
-"""
 # Get Google API Key (disabled for now)
-google_api_key = ''
-with open(repo_path+'/keys.json') as key_file:
-  key_data = json.load(key_file)
-  google_api_key = key_data['googleapi']
-"""
+#google_api_key = ''
+#with open(repo_path+'/keys.json') as key_file:
+  #key_data = json.load(key_file)
+  #google_api_key = key_data['googleapi']
 
 # Check for required datasets
 dataset_base_path = repo_path+'/data/climatestations/raw'
@@ -45,7 +56,6 @@ dly_tmin_normal = open(dataset_base_path+'/dly-tmin-normal.txt', 'r')
 dly_tmin_stddev = open(dataset_base_path+'/dly-tmin-stddev.txt', 'r')
 dly_tavg_normal = open(dataset_base_path+'/dly-tavg-normal.txt', 'r')
 dly_tavg_stddev = open(dataset_base_path+'/dly-tavg-stddev.txt', 'r')
-# END: REAL DATASETS
 # TEST DATASETS
 #dly_tmax_normal = open(dataset_base_path+'/dly-tmax-normal-test.txt', 'r')
 #dly_tmax_stddev = open(dataset_base_path+'/dly-tmax-stddev-test.txt', 'r')
@@ -53,7 +63,6 @@ dly_tavg_stddev = open(dataset_base_path+'/dly-tavg-stddev.txt', 'r')
 #dly_tmin_stddev = open(dataset_base_path+'/dly-tmin-stddev-test.txt', 'r')
 #dly_tavg_normal = open(dataset_base_path+'/dly-tavg-normal-test.txt', 'r')
 #dly_tavg_stddev = open(dataset_base_path+'/dly-tavg-stddev-test.txt', 'r')
-# END: TEST DATASETS
 datasets = [
   {'dataset': dly_tmax_normal, 'data_index_name': 'dlyTMaxNormal'},
   {'dataset': dly_tmax_stddev, 'data_index_name': 'dlyTMaxStddev'},
@@ -62,6 +71,7 @@ datasets = [
   {'dataset': dly_tavg_normal, 'data_index_name': 'dlyTAvgNormal'},
   {'dataset': dly_tavg_stddev, 'data_index_name': 'dlyTAvgStddev'},
 ]
+
 # Ensure all data in datasets come in multiples of 12
 # (one line per month, 12 months per year)
 for dataset in datasets:
@@ -77,7 +87,7 @@ for dataset in datasets:
 
 all_station_data = {}
 
-# Add additional station-specific data
+# Add station data
 slice_station_id = slice(0, 11)
 slice_latitude = slice(12, 20)
 slice_longitude = slice(21, 30)
@@ -117,6 +127,7 @@ with open(dataset_base_path+'/allstations.txt', 'r') as location_dataset:
         }
       }
 
+# Add climate data from NCDC datasets
 for dataset in datasets:
   # Parse datasets into JSON-ready Python dictionary
   while True:
@@ -138,9 +149,34 @@ for dataset in datasets:
         # Don't save the -8888 values.
         # They are used when the "date not defined (e.g. February 30, September 31) - used in daily files to achieve fixed-length records"
         if temp != '-8888':
-          all_station_data[station_id][dataset['data_index_name']]['data'].append(float(temp[:-1])/10)
+          all_station_data[station_id][dataset['data_index_name']]['data'].append(fahrenheit_to_celsius(float(temp[:-1])/10))
 
   dataset['dataset'].close()
+
+
+# Estimate soil temperature
+for station_id in all_station_data:
+  if 'dlyTAvgNormal' in all_station_data[station_id]:
+    all_station_data[station_id]['dlySoilTAvg'] = {
+      'completeness': all_station_data[station_id]['dlyTAvgNormal']['completeness'],
+      'data': []
+    }
+    for i, avg in enumerate(all_station_data[station_id]['dlyTAvgNormal']['data']):
+      # ref: https://www.researchgate.net/post/How_can_I_estimate_soil_temperature_from_air_temperature_data
+      # ref: Zheng et al. : Soil Temperature Model (https://www.researchgate.net/file.PostFileLoader.html?id=551fabcef15bc7fa388b456e&assetKey=AS%3A273749864058898%401442278461731)
+      # TODO: Account for snowpack and generally improve this by incorporating precipitation, snowfall, clouds, etc
+      #
+      # F(J) = (A(J) - A(J-1))*M + E(J)
+      #
+      # Where
+      #  F(J): soil temperature on day J
+      #  A(J): average air temperature on day J
+      #  E(J): 11 day running average of average air temperatures on day J
+      #  M: 0.25
+      m = 0.25
+      all_station_data[station_id]['dlySoilTAvg']['data'][i] =\
+        (all_station_data[station_id]['dlyTAvgNormal']['data'][i] - all_station_data[station_id]['dlyTAvgNormal']['data'][i-1]) * m \
+          + running_average(11, all_station_data[station_id]['dlyTAvgNormal']['data'], i)
 
 processed_data_path = repo_path+'/data/climatestations/processed'
 # ref: http://stackoverflow.com/questions/273192/how-to-check-if-a-directory-exists-and-create-it-if-necessary#comment42815524_273227
@@ -150,8 +186,8 @@ except OSError:
   if not os.path.isdir(processed_data_path):
     raise
 with open(processed_data_path+'/climatestations.json', 'w+') as outfile:
-  for key in all_station_data:
+  for station_id in all_station_data:
     # Only add the station to output if it comtains all required keys
-    if all (k in all_station_data[key] for k in ('dlyTMaxNormal', 'dlyTMaxStddev', 'dlyTMinNormal', 'dlyTMinStddev', 'dlyTAvgNormal', 'dlyTAvgStddev')):
-      json.dump(all_station_data[key], outfile)
+    if all (key in all_station_data[station_id] for key in ('dlyTMaxNormal', 'dlyTMaxStddev', 'dlyTMinNormal', 'dlyTMinStddev', 'dlyTAvgNormal', 'dlyTAvgStddev')):
+      json.dump(all_station_data[station_id], outfile)
       outfile.write('\n')
