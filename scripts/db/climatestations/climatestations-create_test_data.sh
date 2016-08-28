@@ -9,6 +9,8 @@ then
   exit 1;
 fi
 
+# Stations
+head -n2 allstations.txt | tail -n1 > allstations-test.txt
 # Average
 head -n12 dly-tavg-normal.txt > dly-tavg-normal-test.txt
 head -n12 dly-tavg-stddev.txt > dly-tavg-stddev-test.txt
