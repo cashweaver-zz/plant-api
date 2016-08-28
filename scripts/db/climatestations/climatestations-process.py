@@ -6,7 +6,7 @@ from math import fsum
 #import requests
 
 def fahrenheit_to_celsius(degrees):
-  return (degrees - 32) * (5/9)
+  return (degrees - 32.0) * (5.0/9.0)
 
 def running_average(length, data, index):
   if length < index+1:
@@ -174,9 +174,9 @@ for station_id in all_station_data:
       #  E(J): 11 day running average of average air temperatures on day J
       #  M: 0.25
       m = 0.25
-      all_station_data[station_id]['dlySoilTAvg']['data'][i] =\
+      all_station_data[station_id]['dlySoilTAvg']['data'].append(\
         (all_station_data[station_id]['dlyTAvgNormal']['data'][i] - all_station_data[station_id]['dlyTAvgNormal']['data'][i-1]) * m \
-          + running_average(11, all_station_data[station_id]['dlyTAvgNormal']['data'], i)
+          + running_average(11, all_station_data[station_id]['dlyTAvgNormal']['data'], i))
 
 processed_data_path = repo_path+'/data/climatestations/processed'
 # ref: http://stackoverflow.com/questions/273192/how-to-check-if-a-directory-exists-and-create-it-if-necessary#comment42815524_273227

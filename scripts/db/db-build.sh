@@ -5,7 +5,7 @@ BASE_PATH="/home/vagrant/plant-api"
 DATA_PATH="$BASE_PATH/data"
 
 echo "Creating $DATA_PATH"
-mkdir "$SAVE_PATH"
+mkdir -p "$DATA_PATH"
 
 echo "Building plantapi.plants"
 # There's nothing to do at the moment.
