@@ -31,7 +31,12 @@ wget $WGET_OPTIONS http://www1.ncdc.noaa.gov/pub/data/normals/1981-2010/station-
 wget $WGET_OPTIONS http://www1.ncdc.noaa.gov/pub/data/normals/1981-2010/station-inventories/zipcodes-normals-stations.txt
 
 # Temperature data
+# Daily Max Temperature
 wget $WGET_OPTIONS http://www1.ncdc.noaa.gov/pub/data/normals/1981-2010/products/temperature/dly-tmax-normal.txt
 wget $WGET_OPTIONS http://www1.ncdc.noaa.gov/pub/data/normals/1981-2010/products/temperature/dly-tmax-stddev.txt
+# Daily Min Temperature
 wget $WGET_OPTIONS http://www1.ncdc.noaa.gov/pub/data/normals/1981-2010/products/temperature/dly-tmin-normal.txt
 wget $WGET_OPTIONS http://www1.ncdc.noaa.gov/pub/data/normals/1981-2010/products/temperature/dly-tmin-stddev.txt
+# Daily Average Temperature
+wget $WGET_OPTIONS http://www1.ncdc.noaa.gov/pub/data/normals/1981-2010/products/temperature/dly-tavg-normal.txt
+wget $WGET_OPTIONS http://www1.ncdc.noaa.gov/pub/data/normals/1981-2010/products/temperature/dly-tavg-stddev.txt
