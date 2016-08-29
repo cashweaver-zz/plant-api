@@ -83,19 +83,19 @@ if required_dataset_missing:
 
 # Open datasets
 # REAL DATASETS
-#dly_tmax_normal = open(dataset_base_path+'/dly-tmax-normal.txt', 'r')
-#dly_tmax_stddev = open(dataset_base_path+'/dly-tmax-stddev.txt', 'r')
-#dly_tmin_normal = open(dataset_base_path+'/dly-tmin-normal.txt', 'r')
-#dly_tmin_stddev = open(dataset_base_path+'/dly-tmin-stddev.txt', 'r')
-#dly_tavg_normal = open(dataset_base_path+'/dly-tavg-normal.txt', 'r')
-#dly_tavg_stddev = open(dataset_base_path+'/dly-tavg-stddev.txt', 'r')
+dly_tmax_normal = open(dataset_base_path+'/dly-tmax-normal.txt', 'r')
+dly_tmax_stddev = open(dataset_base_path+'/dly-tmax-stddev.txt', 'r')
+dly_tmin_normal = open(dataset_base_path+'/dly-tmin-normal.txt', 'r')
+dly_tmin_stddev = open(dataset_base_path+'/dly-tmin-stddev.txt', 'r')
+dly_tavg_normal = open(dataset_base_path+'/dly-tavg-normal.txt', 'r')
+dly_tavg_stddev = open(dataset_base_path+'/dly-tavg-stddev.txt', 'r')
 # TEST DATASETS
-dly_tmax_normal = open(dataset_base_path+'/dly-tmax-normal-test.txt', 'r')
-dly_tmax_stddev = open(dataset_base_path+'/dly-tmax-stddev-test.txt', 'r')
-dly_tmin_normal = open(dataset_base_path+'/dly-tmin-normal-test.txt', 'r')
-dly_tmin_stddev = open(dataset_base_path+'/dly-tmin-stddev-test.txt', 'r')
-dly_tavg_normal = open(dataset_base_path+'/dly-tavg-normal-test.txt', 'r')
-dly_tavg_stddev = open(dataset_base_path+'/dly-tavg-stddev-test.txt', 'r')
+#dly_tmax_normal = open(dataset_base_path+'/dly-tmax-normal-test.txt', 'r')
+#dly_tmax_stddev = open(dataset_base_path+'/dly-tmax-stddev-test.txt', 'r')
+#dly_tmin_normal = open(dataset_base_path+'/dly-tmin-normal-test.txt', 'r')
+#dly_tmin_stddev = open(dataset_base_path+'/dly-tmin-stddev-test.txt', 'r')
+#dly_tavg_normal = open(dataset_base_path+'/dly-tavg-normal-test.txt', 'r')
+#dly_tavg_stddev = open(dataset_base_path+'/dly-tavg-stddev-test.txt', 'r')
 datasets = [
   {'dataset': dly_tmax_normal, 'data_index_name': 'dlyTMaxNormal'},
   {'dataset': dly_tmax_stddev, 'data_index_name': 'dlyTMaxStddev'},
@@ -116,7 +116,6 @@ for dataset in datasets:
 
   # Return file pointer to the beginning of the file
   dataset['dataset'].seek(0)
-
 
 all_station_data = {}
 
