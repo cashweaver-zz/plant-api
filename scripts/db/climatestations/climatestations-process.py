@@ -8,6 +8,9 @@ from math import fsum
 def fahrenheit_to_celsius(degrees):
   return (degrees - 32.0) * (5.0/9.0)
 
+def fahrenheit_stddev_to_celsius_stddev(stddev):
+  return stddev * (100.0/180.0)
+
 def running_average(length, data, index):
   if length < index+1:
     return fsum(data[index+1-length:index+1])/length
@@ -181,7 +184,10 @@ for dataset in datasets:
         # Don't save the -8888 values.
         # They are used when the "date not defined (e.g. February 30, September 31) - used in daily files to achieve fixed-length records"
         if temp != '-8888':
-          all_station_data[station_id][dataset['data_index_name']]['data'].append(fahrenheit_to_celsius(float(temp[:-1])/10))
+          if 'Stddev' in dataset['data_index_name']:
+            all_station_data[station_id][dataset['data_index_name']]['data'].append(fahrenheit_stddev_to_celsius_stddev(float(temp[:-1])/10))
+          else:
+            all_station_data[station_id][dataset['data_index_name']]['data'].append(fahrenheit_to_celsius(float(temp[:-1])/10))
 
   dataset['dataset'].close()
 
