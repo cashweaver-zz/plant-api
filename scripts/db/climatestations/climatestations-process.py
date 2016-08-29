@@ -17,6 +17,36 @@ def running_average(length, data, index):
       sub_data.append(data[i])
     return fsum(sub_data)/length
 
+def get_frost_dates_z(normals, stddev, z):
+  i = 0
+  max_len = 0
+  last_spring_frost_index = 0
+  first_fall_frost_index = 0
+  while i < len(normals):
+    if ((stddev[i] * z ) + normals[i]) > 0:
+      j = i
+      cur_len = 0
+      while j < len(normals) and ((stddev[j] * z ) + normals[j]) > 0:
+        cur_len += 1
+        j += 1
+        if cur_len > max_len:
+          last_spring_frost_index = i - 1
+          first_fall_frost_index = j
+          max_len = cur_len
+      i = j
+    else:
+      i += 1
+  return [last_spring_frost_index, first_fall_frost_index]
+
+def get_frost_dates_90(normals, stddev):
+  return get_frost_dates_z(normals, stddev, -1.28)
+
+def get_frost_dates_95(normals, stddev):
+  return get_frost_dates_z(normals, stddev, -1.645)
+
+def get_frost_dates_99(normals, stddev):
+  return get_frost_dates_z(normals, stddev, -2.33)
+
 repo_path = '/home/vagrant/plant-api'
 
 # Get Google API Key (disabled for now)
@@ -50,19 +80,19 @@ if required_dataset_missing:
 
 # Open datasets
 # REAL DATASETS
-dly_tmax_normal = open(dataset_base_path+'/dly-tmax-normal.txt', 'r')
-dly_tmax_stddev = open(dataset_base_path+'/dly-tmax-stddev.txt', 'r')
-dly_tmin_normal = open(dataset_base_path+'/dly-tmin-normal.txt', 'r')
-dly_tmin_stddev = open(dataset_base_path+'/dly-tmin-stddev.txt', 'r')
-dly_tavg_normal = open(dataset_base_path+'/dly-tavg-normal.txt', 'r')
-dly_tavg_stddev = open(dataset_base_path+'/dly-tavg-stddev.txt', 'r')
+#dly_tmax_normal = open(dataset_base_path+'/dly-tmax-normal.txt', 'r')
+#dly_tmax_stddev = open(dataset_base_path+'/dly-tmax-stddev.txt', 'r')
+#dly_tmin_normal = open(dataset_base_path+'/dly-tmin-normal.txt', 'r')
+#dly_tmin_stddev = open(dataset_base_path+'/dly-tmin-stddev.txt', 'r')
+#dly_tavg_normal = open(dataset_base_path+'/dly-tavg-normal.txt', 'r')
+#dly_tavg_stddev = open(dataset_base_path+'/dly-tavg-stddev.txt', 'r')
 # TEST DATASETS
-#dly_tmax_normal = open(dataset_base_path+'/dly-tmax-normal-test.txt', 'r')
-#dly_tmax_stddev = open(dataset_base_path+'/dly-tmax-stddev-test.txt', 'r')
-#dly_tmin_normal = open(dataset_base_path+'/dly-tmin-normal-test.txt', 'r')
-#dly_tmin_stddev = open(dataset_base_path+'/dly-tmin-stddev-test.txt', 'r')
-#dly_tavg_normal = open(dataset_base_path+'/dly-tavg-normal-test.txt', 'r')
-#dly_tavg_stddev = open(dataset_base_path+'/dly-tavg-stddev-test.txt', 'r')
+dly_tmax_normal = open(dataset_base_path+'/dly-tmax-normal-test.txt', 'r')
+dly_tmax_stddev = open(dataset_base_path+'/dly-tmax-stddev-test.txt', 'r')
+dly_tmin_normal = open(dataset_base_path+'/dly-tmin-normal-test.txt', 'r')
+dly_tmin_stddev = open(dataset_base_path+'/dly-tmin-stddev-test.txt', 'r')
+dly_tavg_normal = open(dataset_base_path+'/dly-tavg-normal-test.txt', 'r')
+dly_tavg_stddev = open(dataset_base_path+'/dly-tavg-stddev-test.txt', 'r')
 datasets = [
   {'dataset': dly_tmax_normal, 'data_index_name': 'dlyTMaxNormal'},
   {'dataset': dly_tmax_stddev, 'data_index_name': 'dlyTMaxStddev'},
@@ -153,9 +183,8 @@ for dataset in datasets:
 
   dataset['dataset'].close()
 
-
-# Estimate soil temperature
 for station_id in all_station_data:
+  # Estimate soil temperature
   if 'dlyTAvgNormal' in all_station_data[station_id]:
     all_station_data[station_id]['dlySoilTAvg'] = {
       'completeness': all_station_data[station_id]['dlyTAvgNormal']['completeness'],
@@ -177,6 +206,14 @@ for station_id in all_station_data:
       all_station_data[station_id]['dlySoilTAvg']['data'].append(\
         (all_station_data[station_id]['dlyTAvgNormal']['data'][i] - all_station_data[station_id]['dlyTAvgNormal']['data'][i-1]) * m \
           + running_average(11, all_station_data[station_id]['dlyTAvgNormal']['data'], i))
+
+  # Estimate frost dates
+  if all (key in all_station_data[station_id] for key in ('dlyTMinNormal', 'dlyTMinStddev')):
+    all_station_data[station_id]['frostDates'] = {
+      '90': get_frost_dates_90(all_station_data[station_id]['dlyTMinNormal'], all_station_data[station_id]['dlyTMinStddev']),
+      '95': get_frost_dates_95(all_station_data[station_id]['dlyTMinNormal'], all_station_data[station_id]['dlyTMinStddev']),
+      '99': get_frost_dates_99(all_station_data[station_id]['dlyTMinNormal'], all_station_data[station_id]['dlyTMinStddev'])
+    }
 
 processed_data_path = repo_path+'/data/climatestations/processed'
 # ref: http://stackoverflow.com/questions/273192/how-to-check-if-a-directory-exists-and-create-it-if-necessary#comment42815524_273227
