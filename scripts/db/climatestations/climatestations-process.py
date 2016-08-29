@@ -18,6 +18,9 @@ def running_average(length, data, index):
     return fsum(sub_data)/length
 
 def get_frost_dates_z(normals, stddev, z):
+  # TODO: don't assume len(normals) == len(stddev)
+  # TODO: normals and stddev should be lists
+  # TODO: z should be a number
   i = 0
   max_len = 0
   last_spring_frost_index = 0
@@ -30,13 +33,13 @@ def get_frost_dates_z(normals, stddev, z):
         cur_len += 1
         j += 1
         if cur_len > max_len:
-          last_spring_frost_index = i - 1
-          first_fall_frost_index = j
+          last_spring_frost_index = i - 1 if i > 1 else 0
+          first_fall_frost_index = j if j < len(normals) else len(normals) - 1
           max_len = cur_len
       i = j
     else:
       i += 1
-  return [last_spring_frost_index, first_fall_frost_index]
+  return [last_spring_frost_index, first_fall_frost_index] if last_spring_frost_index != 0 and first_fall_frost_index != len(normals) - 1 else []
 
 def get_frost_dates_90(normals, stddev):
   return get_frost_dates_z(normals, stddev, -1.28)
