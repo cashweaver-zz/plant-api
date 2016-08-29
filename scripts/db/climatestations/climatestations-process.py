@@ -210,9 +210,9 @@ for station_id in all_station_data:
   # Estimate frost dates
   if all (key in all_station_data[station_id] for key in ('dlyTMinNormal', 'dlyTMinStddev')):
     all_station_data[station_id]['frostDates'] = {
-      '90': get_frost_dates_90(all_station_data[station_id]['dlyTMinNormal'], all_station_data[station_id]['dlyTMinStddev']),
-      '95': get_frost_dates_95(all_station_data[station_id]['dlyTMinNormal'], all_station_data[station_id]['dlyTMinStddev']),
-      '99': get_frost_dates_99(all_station_data[station_id]['dlyTMinNormal'], all_station_data[station_id]['dlyTMinStddev'])
+      '90': get_frost_dates_90(all_station_data[station_id]['dlyTMinNormal']['data'], all_station_data[station_id]['dlyTMinStddev']['data']),
+      '95': get_frost_dates_95(all_station_data[station_id]['dlyTMinNormal']['data'], all_station_data[station_id]['dlyTMinStddev']['data']),
+      '99': get_frost_dates_99(all_station_data[station_id]['dlyTMinNormal']['data'], all_station_data[station_id]['dlyTMinStddev']['data'])
     }
 
 processed_data_path = repo_path+'/data/climatestations/processed'
