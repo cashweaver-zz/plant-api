@@ -9,7 +9,7 @@ let API = require('json-api');
 let APIError = API.types.Error;
 let mongoose = require('mongoose');
 let models = {
-  Plant: require('./models/plant')
+  Plant: require('./models/plant'),
   Station: require('./models/station')
 };
 
@@ -18,9 +18,10 @@ mongoose.connect('mongodb://localhost/plantapi');
 // Register models with json-api
 let adapter = new API.dbAdapters.Mongoose(models);
 let registry = new API.ResourceTypeRegistry(
-  { plants: require('./resource-descriptions/plants') },
-  { stations: require('./resource-descriptions/stations') },
-  { dbAdapter: adapter }
+  {
+    plants: require('./resource-descriptions/plants'),
+    stations: require('./resource-descriptions/stations')
+  }, { dbAdapter: adapter }
 );
 
 // Initialize automatic documentation
