@@ -10,7 +10,7 @@ let APIError = API.types.Error;
 let mongoose = require('mongoose');
 let models = {
   Plant: require('./models/plant'),
-  Station: require('./models/station')
+  Climatestation: require('./models/climatestation')
 };
 
 mongoose.connect('mongodb://localhost/plantapi');
@@ -20,7 +20,7 @@ let adapter = new API.dbAdapters.Mongoose(models);
 let registry = new API.ResourceTypeRegistry(
   {
     plants: require('./resource-descriptions/plants'),
-    stations: require('./resource-descriptions/stations')
+    climatestations: require('./resource-descriptions/climatestations')
   }, { dbAdapter: adapter }
 );
 
@@ -43,9 +43,9 @@ router.use(function (req, res, next) {
 });
 
 router.get('/', Front.docsRequest.bind(Front));
-router.route('/:type(plants|stations)')
+router.route('/:type(plants|climatestations)')
   .get(apiReqHandler);
-router.route('/:type(plants|stations)/:id')
+router.route('/:type(plants|climatestations)/:id')
   .get(apiReqHandler);
 
 router.use(function (req, res, next) {
