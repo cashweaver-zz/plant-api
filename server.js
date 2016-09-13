@@ -10,6 +10,7 @@ let APIError = API.types.Error;
 let mongoose = require('mongoose');
 let models = {
   Plant: require('./models/plant')
+  Station: require('./models/station')
 };
 
 mongoose.connect('mongodb://localhost/plantapi');
@@ -18,6 +19,7 @@ mongoose.connect('mongodb://localhost/plantapi');
 let adapter = new API.dbAdapters.Mongoose(models);
 let registry = new API.ResourceTypeRegistry(
   { plants: require('./resource-descriptions/plants') },
+  { stations: require('./resource-descriptions/stations') },
   { dbAdapter: adapter }
 );
 
@@ -40,7 +42,9 @@ router.use(function (req, res, next) {
 });
 
 router.get('/', Front.docsRequest.bind(Front));
-router.route('/:type(plants)')
+router.route('/:type(plants|stations)')
+  .get(apiReqHandler);
+router.route('/:type(plants|stations)/:id')
   .get(apiReqHandler);
 
 router.use(function (req, res, next) {
